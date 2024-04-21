@@ -22,11 +22,11 @@ namespace Task.DataAccess.Repositories.Implementations
         }
         public async Task<List<Goods_TNVED>> GetGoodsByCode(string code)
         {
-          
+
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
 
-                IEnumerable<Goods_TNVED> goodts=new List<Goods_TNVED>();
+                IEnumerable<Goods_TNVED> goodts = new List<Goods_TNVED>();
                 string query = @"
                     WITH RecursiveCTE AS (
                         SELECT Id, Code, Defis, Name, Parent_id
@@ -41,16 +41,17 @@ namespace Task.DataAccess.Repositories.Implementations
                     )
                     SELECT Id, Code, Defis, Name, Parent_id
                     FROM RecursiveCTE";
-                goodts= await db.QueryAsync<Goods_TNVED>(query, new { Code = code });
-                var goos= goodts.ToList();
-               
+                goodts = await db.QueryAsync<Goods_TNVED>(query, new { Code = code });
+                var goos = goodts.ToList();
+
 
                 return goos;
             }
 
-          
+
 
         }
+
         public async Task<Goods_TNVED> GetGoodByCode(string code)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
@@ -58,7 +59,26 @@ namespace Task.DataAccess.Repositories.Implementations
                 string query = @"
                     SELECT Id, Code, Defis, Name, Parent_id
                     FROM Goods_TNVED WHERE Code = @Code";
-                return await db.QueryFirstOrDefaultAsync<Goods_TNVED>(query, new { Code = code });
+                var result = await db.QueryFirstOrDefaultAsync<Goods_TNVED>(query, new { Code = code });
+                var resul1 = await GetGoodParent(result.Id);
+                while (resul1.PARENT_ID != 0)
+                {
+                    resul1 = await GetGoodParent(resul1.PARENT_ID);
+                }
+                return resul1;
+            }
+        }
+        private static async Task<Goods_TNVED> GetGoodParent(int id)
+        {
+            using (IDbConnection db = new SqlConnection("Server=DESKTOP-BOCAUO6;Database=Dictionaries;Trusted_Connection=True;"))
+            {
+                string query = @"
+                    SELECT Id, Code, Defis, Name, Parent_id
+                    FROM Goods_TNVED WHERE Id = @id";
+                var result = await db.QueryFirstOrDefaultAsync<Goods_TNVED>(query, new { Id = id });
+                return result;
+
+
             }
         }
 

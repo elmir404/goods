@@ -12,7 +12,7 @@ namespace Task.DataAccess.Entities
         public string Name { get; set; }
         public string CODE { get; set; }
         public string DEFIS { get; set; }
-        public int? PARENT_ID { get; set; }
+        public int PARENT_ID { get; set; } = 0;
 
         public ICollection<Goods_TNVED> Goods_TNVEDs { get; set; }
     }

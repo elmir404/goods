@@ -1,4 +1,4 @@
-﻿namespace Education.Business.Results
+﻿namespace Task.Business.Results
 {
     public class ServiceResult
     {

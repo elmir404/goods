@@ -1,4 +1,4 @@
-﻿using Education.Business.Results;
+﻿using Task.Business.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +28,9 @@ namespace Task.Business.Services.Implementations
                 {
                     return new ServiceResult(false, "Kod parametri 10 rəqəmli olmalıdır!");
                 }
-                var parent=await _productRepository.GetGoodByCode(code);
-                if(parent == null) {
-                    return new ServiceResult(false, "Məlumat tapılmadı!");
-                }
-                var result = await _productRepository.GetGoodsByCode(code);
+                var parent = await _productRepository.GetGoodByCode(code);
+
+                var result = await _productRepository.GetGoodsByCode(parent.CODE);
                 List<GetGoodsDto> three = result
                    .Where(e => e.Id == parent.Id)
                    .Select(e => new GetGoodsDto
@@ -46,7 +44,7 @@ namespace Task.Business.Services.Implementations
                    }).ToList();
 
 
-                return new ServiceResult(true,three);
+                return new ServiceResult(true, three);
             }
             catch (Exception ex)
             {
@@ -55,6 +53,7 @@ namespace Task.Business.Services.Implementations
         }
         private static List<GetGoodsDto> GetSubGoods(List<Goods_TNVED> items, int parentId)
         {
+
             return items.Where(x => x.PARENT_ID == parentId)
                 .Select(e => new GetGoodsDto
                 {
@@ -68,6 +67,8 @@ namespace Task.Business.Services.Implementations
                 }).ToList();
         }
 
+
+
     }
-  
+
 }
