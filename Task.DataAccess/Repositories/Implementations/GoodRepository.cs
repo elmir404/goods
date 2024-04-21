@@ -60,17 +60,17 @@ namespace Task.DataAccess.Repositories.Implementations
                     SELECT Id, Code, Defis, Name, Parent_id
                     FROM Goods_TNVED WHERE Code = @Code";
                 var result = await db.QueryFirstOrDefaultAsync<Goods_TNVED>(query, new { Code = code });
-                var resul1 = await GetGoodParent(result.Id);
+                var resul1 = await GetGoodParent(result.Id, _connectionString);
                 while (resul1.PARENT_ID != 0)
                 {
-                    resul1 = await GetGoodParent(resul1.PARENT_ID);
+                    resul1 = await GetGoodParent(resul1.PARENT_ID,_connectionString);
                 }
                 return resul1;
             }
         }
-        private static async Task<Goods_TNVED> GetGoodParent(int id)
+        private static async Task<Goods_TNVED> GetGoodParent(int id,string connectionString)
         {
-            using (IDbConnection db = new SqlConnection("Server=DESKTOP-BOCAUO6;Database=Dictionaries;Trusted_Connection=True;"))
+            using (IDbConnection db = new SqlConnection(connectionString))
             {
                 string query = @"
                     SELECT Id, Code, Defis, Name, Parent_id
